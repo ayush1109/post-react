@@ -1,0 +1,12 @@
+export const ADD_WISHLIST = 'ADD_WISHLIST';
+export const WISHLIST_LOADING = 'WISHLIST_LOADING';
+export const WISHLIST_FAILED = 'WISHLIST_FAILED';
+
+export const WRITE_WISHLIST = 'WRITE_WISHLIST';
+
+export const EDIT_WISHLIST = 'EDIT_WISHLIST';
+
+
+
+
+
