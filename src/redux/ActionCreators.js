@@ -1,10 +1,16 @@
 import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../shared/baseUrl'; 
 
-export const fetchWishList = () => (dispatch) => {
-    dispatch(wishListLoading(true));
+export const fetchPosts = () => (dispatch) => {
+    dispatch(postsLoading(true));
 
-    return fetch(baseUrl + 'wishlist')
+    const bearer = 'Bearer ' + localStorage.getItem('token');
+
+    return fetch(baseUrl + 'posts', {
+        headers: {
+            'Authorization': bearer
+        }
+    })
             .then(response => {
                 if (response.ok) {
                     return response;
@@ -20,33 +26,35 @@ export const fetchWishList = () => (dispatch) => {
                 throw errmess;
             })
             .then(response => response.json())
-            .then(list => dispatch(addWishList(list)))
-            .catch(error => dispatch(wishListFailed(error.message)));
+            .then(list => dispatch(addPosts(list)))
+            .catch(error => dispatch(postsFailed(error.message)));
 }
 
-export const wishListLoading = () => ({
-    type: ActionTypes.WISHLIST_LOADING
+export const postsLoading = () => ({
+    type: ActionTypes.POST_LOADING
 });
 
-export const wishListFailed = (errmess) => ({
-    type: ActionTypes.WISHLIST_FAILED,
+export const postsFailed = (errmess) => ({
+    type: ActionTypes.POST_FAILED,
     payload: errmess
 })
 
-export const addWishList = (list) => ({
-    type: ActionTypes.ADD_WISHLIST,
+export const addPosts = (list) => ({
+    type: ActionTypes.ADD_POST,
     payload: list
 })
 
 
-export const postWishList = (data) => (dispatch) => {
+export const writePost = (data) => (dispatch) => {
 
+    const bearer = 'Bearer ' + localStorage.getItem('token');
 
-    return fetch(baseUrl + 'wishlist', {
+    return fetch(baseUrl + 'posts', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': bearer
         }
     })
     .then(response => {
@@ -64,24 +72,27 @@ export const postWishList = (data) => (dispatch) => {
         throw errmess;
     })
     .then(response => response.json())
-    .then(response => dispatch(writeWishList(response)))
-    .catch(error => {console.log('Post WishList ' + error.message)
-            alert('Your WishList could not be posted\n Error: ' + error.message)})
+    .then(response => dispatch(postPost(response)))
+    .catch(error => {console.log('Write Posts ' + error.message)
+            alert('Your Post could not be posted\n Error: ' + error.message)})
 }
 
 
-export const writeWishList = (list) => ({
-    type: ActionTypes.WRITE_WISHLIST,
+export const postPost = (list) => ({
+    type: ActionTypes.WRITE_POST,
     payload: list
 })
 
 
-export const deleteWishList = (id) => (dispatch) => {
+export const deletePost = (id) => (dispatch) => {
     
-    return fetch(baseUrl + 'wishlist/' + id, {
+    const bearer = 'Bearer ' + localStorage.getItem('token');
+
+    return fetch(baseUrl + 'posts/' + id, {
         method: 'DELETE',
         headers: {
-            'Content-Type' : 'application/json'
+            'Content-Type' : 'application/json',
+            'Authorization' : bearer
         }
     })
     .then(response => {
@@ -99,18 +110,21 @@ export const deleteWishList = (id) => (dispatch) => {
         throw errmess;
     })
     .then(response => response.json())
-    .then(response => console.log('wishlist deleted ' + response))
-    .catch(error => {console.log('Delete wishlist ' + error.message)
-    alert('Your WishList could not be deleted\n Error: ' + error.message)})
+    .then(response => console.log('post deleted ' + response))
+    .catch(error => {console.log('Delete post ' + error.message)
+    alert('Your Post could not be deleted\n Error: ' + error.message)})
 }
 
-export const updateWishList = (data, id) => (dispatch) => {
+export const updatePost = (data, id) => (dispatch) => {
     
-    return fetch(baseUrl + 'wishlist/' + id, {
+    const bearer = 'Bearer ' + localStorage.getItem('token');
+
+    return fetch(baseUrl + 'posts/' + id, {
         method: 'PUT',
         body: JSON.stringify(data),
         headers: {
-            'Content-Type' : 'application/json'
+            'Content-Type' : 'application/json',
+            'Authorization' : bearer
         }
     })
     .then(response => {
@@ -128,23 +142,26 @@ export const updateWishList = (data, id) => (dispatch) => {
         throw errmess;
     })
     .then(response => response.json())
-    .then(response => dispatch(editWishList(response)))
-    .catch(error => {console.log('Update wishlist ' + error.message)
-    alert('Your WishList could not be updated\n Error: ' + error.message)})
+    .then(response => dispatch(editPost(response)))
+    .catch(error => {console.log('Update post ' + error.message)
+    alert('Your Post could not be updated\n Error: ' + error.message)})
 }
 
-export const editWishList = (wishlist) => ({
-    type: ActionTypes.EDIT_WISHLIST,
-    payload: wishlist
+export const editPost = (post) => ({
+    type: ActionTypes.EDIT_POST,
+    payload: post
 })
 
 
-export const deleteAllWishList = () => (dispatch) => {
+export const deleteAllPost = () => (dispatch) => {
     
-    return fetch(baseUrl + 'wishlist/', {
+    const bearer = 'Bearer ' + localStorage.getItem('token');
+
+    return fetch(baseUrl + 'posts/', {
         method: 'DELETE',
         headers: {
-            'Content-Type' : 'application/json'
+            'Content-Type' : 'application/json',
+            'Authorization' : bearer
         }
     })
     .then(response => {
@@ -162,7 +179,152 @@ export const deleteAllWishList = () => (dispatch) => {
         throw errmess;
     })
     .then(response => response.json())
-    .then(response => console.log('wishlist deleted ' + response))
-    .catch(error => {console.log('Delete wishlist ' + error.message)
-    alert('Your WIshList could not be deleted\n Error: ' + error.message)})
+    .then(response => console.log('posts deleted ' + response))
+    .catch(error => {console.log('Delete posts ' + error.message)
+    alert('Your Posts could not be deleted\n Error: ' + error.message)})
+}
+
+
+
+
+export const requestLogin = (creds) => {
+    return {
+        type: ActionTypes.LOGIN_REQUEST,
+        creds
+    }
+}
+
+export const requestSignup = (creds) => {
+    return {
+        type: ActionTypes.SIGNUP_REQUEST,
+        creds
+    }
+}
+  
+export const receiveLogin = (response) => {
+    return {
+        type: ActionTypes.LOGIN_SUCCESS,
+        token: response.token
+    }
+}
+ 
+export const receiveSignup = () => {
+    return {
+        type: ActionTypes.SIGNUP_SUCCESS,
+    }
+}
+
+export const loginError = (message) => {
+    return {
+        type: ActionTypes.LOGIN_FAILURE,
+        payload: message
+    }
+}
+
+export const SignupError = (message) => {
+    return {
+        type: ActionTypes.SIGNUP_FAILURE,
+        payload: message
+    }
+}
+export const signupUser = (creds) => (dispatch) => {
+    dispatch(requestSignup(creds))
+
+    return fetch(baseUrl + 'users/signup', {
+        method : 'POST',
+        headers: {
+            'Content-Type':'application/json' 
+        },
+        body: JSON.stringify(creds)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            var error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+        },
+        error => {
+            throw error;
+        })
+    .then(response => response.json())
+    .then(response => {
+        if (response.success) {
+            // Dispatch the success action
+            dispatch(receiveSignup());
+        }
+        else {
+            var error = new Error('Error ' + response.status);
+            error.response = response;
+            throw error;
+        }
+    })
+    .catch(error => dispatch(SignupError(error.message)))
+};
+
+
+
+export const loginUser = (creds) => (dispatch) => {
+    console.log(JSON.stringify(creds))
+    // We dispatch requestLogin to kickoff the call to the API
+    dispatch(requestLogin(creds))
+
+    return fetch(baseUrl + 'users/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type':'application/json' 
+        },
+        body: JSON.stringify(creds)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            var error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+        },
+        error => {
+            throw error;
+        })
+    .then(response => response.json())
+    .then(response => {
+        if (response.success) {
+            // If login was successful, set the token in local storage
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('creds', JSON.stringify(creds));
+            // Dispatch the success action
+            dispatch(fetchPosts());
+            dispatch(receiveLogin(response));
+        }
+        else {
+            var error = new Error('Error ' + response.status);
+            error.response = response;
+            throw error;
+        }
+    })
+    .catch(error => dispatch(loginError(error.message)))
+};
+
+export const requestLogout = () => {
+    return {
+      type: ActionTypes.LOGOUT_REQUEST
+    }
+}
+  
+export const receiveLogout = () => {
+    return {
+      type: ActionTypes.LOGOUT_SUCCESS
+    }
+}
+
+// Logs the user out
+export const logoutUser = () => (dispatch) => {
+    dispatch(requestLogout())
+    localStorage.removeItem('token');
+    localStorage.removeItem('creds');
+    dispatch(receiveLogout())
 }

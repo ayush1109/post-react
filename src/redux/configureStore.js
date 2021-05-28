@@ -1,12 +1,14 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import logger from 'redux-logger';
-import {WishList} from './wishList';
+import {Post} from './post';
+import { Auth } from './auth';
 
 export const ConfigureStore = () => {
     const Store = createStore(
         combineReducers({
-            wishlist: WishList,
+            post: Post,
+            auth: Auth
         })             //Redux Store
         ,
         applyMiddleware(thunk, logger)

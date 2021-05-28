@@ -3,7 +3,7 @@ import {Loading} from './LoadingComponent';
 import {Breadcrumb, BreadcrumbItem, Button, Modal, Form} from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom';
 
-function RenderWishListDetails({ wishlist, updateWishList, deleteWishList}) {
+function RenderPostDetails({ post, updatePost, deletePost}) {
     const history = useHistory();
     const [show, setShow] = useState(false);
 
@@ -21,7 +21,7 @@ function RenderWishListDetails({ wishlist, updateWishList, deleteWishList}) {
       const handleSubmit = e => {
         e.preventDefault();
         console.log(formSubmit);
-        updateWishList(formSubmit, wishlist._id );
+        updatePost(formSubmit, post._id );
         setTimeout(function () {
             window.location.reload();
           }, 1000);
@@ -29,21 +29,21 @@ function RenderWishListDetails({ wishlist, updateWishList, deleteWishList}) {
 
       const handleDelete = e => {
         e.preventDefault();
-        deleteWishList(wishlist._id);
+        deletePost(post._id);
         setTimeout(function () {
-            history.push('/wishlist');
+            history.push('/post');
             window.location.reload();
           }, 1000);
       }
 
 
 
-    if (wishlist != null) {
+    if (post != null) {
         return (
             <div className="container">
-                <h1>Name - {wishlist.name}</h1>
-                <h5>By - {wishlist.author}</h5>
-                <p>Description - {wishlist.description}</p>
+                <h1>Title - {post.title}</h1>
+                <h5>By - {post.author.username}</h5>
+                <p>Description - {post.description}</p>
                 <div className="row">
                     <div className="col-md-6">
                     <Button onClick={handleShow}>Edit</Button>
@@ -54,15 +54,15 @@ function RenderWishListDetails({ wishlist, updateWishList, deleteWishList}) {
                 </div>
                 <Modal show={show} onHide={handleClose}>
                         <Modal.Header closeButton>
-                            <Modal.Title>Edit the Wish</Modal.Title>
+                            <Modal.Title>Edit the Post</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                         <Form>
               <div class="row mb-4">
                 <div class="col">
                   <div class="form-outline">
-                    <Form.Control type='text' onChange={e => setSubmitField('name', e.target.value)} />
-                    <Form.Label>Name</Form.Label>
+                    <Form.Control type='text' onChange={e => setSubmitField('title', e.target.value)} />
+                    <Form.Label>Title</Form.Label>
                   </div>
                 </div>
               </div>
@@ -94,7 +94,7 @@ function RenderWishListDetails({ wishlist, updateWishList, deleteWishList}) {
     }
 }
 
-const WishListDetail = (props) => {
+const PostDetail = (props) => {
     
 
     if (props.isLoading)
@@ -114,7 +114,7 @@ const WishListDetail = (props) => {
                 </div>
             </div>
         );
-    else if (props.wishlist == null) {
+    else if (props.post == null) {
         console.log(props)
         return <div>props.product is null</div>
     }
@@ -123,12 +123,12 @@ const WishListDetail = (props) => {
             <div className="container">
                 <div className="row">
                     <Breadcrumb>
-                        <BreadcrumbItem><Link to="/wishlist">Home</Link></BreadcrumbItem>
-                        <BreadcrumbItem active>{props.wishlist.name}</BreadcrumbItem>
+                        <BreadcrumbItem><Link to="/post">Home</Link></BreadcrumbItem>
+                        <BreadcrumbItem active>{props.post.title}</BreadcrumbItem>
                     </Breadcrumb>
                 </div>
                 <div className="row rst">
-                    <RenderWishListDetails wishlist={props.wishlist} updateWishList={props.updateWishList} deleteWishList={props.deleteWishList} />
+                    <RenderPostDetails post={props.post} updatePost={props.updatePost} deletePost={props.deletePost} />
                     
                 </div>
             </div>
@@ -138,4 +138,4 @@ const WishListDetail = (props) => {
 
 
 
-export default WishListDetail;
+export default PostDetail;

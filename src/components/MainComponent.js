@@ -1,69 +1,84 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Home from './HomeComponent';
-import WishListDetail from './WishListDetailComponent';
+import PostDetail from './PostDetailComponent';
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
-import {fetchWishList, postWishList, deleteAllWishList, deleteWishList, writeWishList, updateWishList} from '../redux/ActionCreators';
+import { fetchPosts, writePost, deleteAllPost, deletePost, updatePost, signupUser, loginUser, logoutUser } from '../redux/ActionCreators';
+import { Button } from 'react-bootstrap';
+import Home2 from './Home2Component';
 const mapStateToProps = state => {
-    return {
-      wishlist: state.wishlist
-    }
+  return {
+    post: state.post,
+    auth: state.auth
   }
-  
-  const mapDispatchToProps = dispatch => ({
-    fetchWishList: () => { dispatch(fetchWishList()) },
-    postWishList: (data) => { dispatch(postWishList(data))},
-    deleteAllWishList: () => { dispatch(deleteAllWishList())},
-    deleteWishList: (id) => { dispatch(deleteWishList(id))},
-    writeWishList: (data) => { dispatch(writeWishList(data))},
-    updateWishList: (data, id) => { dispatch(updateWishList(data, id))}
-    });
+}
+
+const mapDispatchToProps = dispatch => ({
+  fetchPosts: () => { dispatch(fetchPosts()) },
+  deleteAllPost: () => { dispatch(deleteAllPost()) },
+  deletePost: (id) => { dispatch(deletePost(id)) },
+  writePost: (data) => { dispatch(writePost(data)) },
+  updatePost: (data, id) => { dispatch(updatePost(data, id)) },
+  loginUser: (creds) => { dispatch(loginUser(creds)) },
+  signupUser: (creds) => { dispatch(signupUser(creds)) },
+  logoutUser: () => { dispatch(logoutUser()) }
+
+});
 
 
 class Main extends Component {
-    constructor(props) {
-        super(props);
-        console.log(props);
-      }
-    
-      componentDidMount() {
-        this.props.fetchWishList();
-      }
-    render() {
-        const homePage = () => {
-            return (
-                <Home wishlist={this.props.wishlist}
-                 isLoading={this.props.wishlist.isLoading}
-                 errMess={this.props.wishlist.errMess}
-                 deleteAllWishList={this.props.deleteAllWishList}
-                 postWishList={this.props.postWishList}
-                 />
-            );
-        }
+  constructor(props) {
+    super(props);
+    console.log(props);
+  }
 
-        const wishlistWithId = ({ match }) => {
-            return (
-              <WishListDetail wishlist={this.props.wishlist.wishlist.filter((list) => list._id === (match.params.wishlistId))[0]}
-                isLoading={this.props.wishlist.isLoading}
-                errMess={this.props.wishlist.errMess}
-                updateWishList={this.props.updateWishList}
-                deleteWishList={this.props.deleteWishList}
-                >
-              </WishListDetail>
-            );
-          }
+  componentDidMount() {
+    this.props.fetchPosts();
+  }
 
-        return (
-            <div className="container">
-                <Switch>
-                <Route exact path='/wishlist' component={homePage} />
-                <Route path='/wishlist/:wishlistId' component={wishlistWithId} />
-                <Redirect to='/wishlist'  />
-            </Switch>
+  render() {
 
-            </div>
-        );
+
+    const homePage = () => {
+      return (
+        this.props.auth.isAuthenticated
+        ?
+        <Home post={this.props.post}
+          isLoading={this.props.post.isLoading}
+          errMess={this.props.post.errMess}
+          deleteAllPost={this.props.deleteAllPost}
+          writePost={this.props.writePost}
+          logoutUser={this.props.logoutUser}
+        />
+        :
+          <Home2 loginUser={this.props.loginUser} signupUser={this.props.signupUser} />
+      );
     }
+
+    const postWithId = ({ match }) => {
+      return (
+        <PostDetail post={this.props.post.post.filter((list) => list._id === (match.params.postId))[0]}
+          isLoading={this.props.post.isLoading}
+          errMess={this.props.post.errMess}
+          updatePost={this.props.updatePost}
+          deletePost={this.props.deletePost}
+        >
+        </PostDetail>
+      );
+    }
+
+    return (
+      <div className="container">
+        <Switch>
+          <Route exact path='/post' component={homePage} />
+          <Route path='/post/:postId' component={postWithId} />
+          <Redirect to='/post' />
+        </Switch>
+        
+
+      </div>
+    );
+  }
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));

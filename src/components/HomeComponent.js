@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import { Loading } from './LoadingComponent';
 import { Button, Card, Modal, Form } from 'react-bootstrap';
 
-function RenderWishList({ wishlist }) {
+function RenderPost({ post }) {
 
     return (
         <Card style={{ width: '18rem' }}>
             <Card.Body>
-                <Link to={`/wishlist/${wishlist._id}`}><Card.Title>{wishlist.name}</Card.Title></Link>
+                <Link to={`/post/${post._id}`}><Card.Title>{post.title}</Card.Title></Link>
             </Card.Body>
         </Card>
 
@@ -26,38 +26,86 @@ const Home = (props) => {
 
     const setSubmitField = (field, value) => {
         setSubmitForm({
-          ...formSubmit,
-          [field]: value
+            ...formSubmit,
+            [field]: value
         })
-      }
+    }
 
-      const handleSubmit = e => {
+    const handleSubmit = e => {
         e.preventDefault();
         console.log(formSubmit);
-        props.postWishList(formSubmit);
+        props.writePost(formSubmit);
         setTimeout(function () {
             window.location.reload();
-          }, 1000);
-      }
+        }, 1000);
+    }
 
-      const handleDelete = e => {
+    const handleDelete = e => {
         e.preventDefault();
-        props.deleteAllWishList();
+        props.deleteAllPost();
         setTimeout(function () {
             window.location.reload();
-          }, 1000);
-      }
+        }, 1000);
+    }
 
-    const wishlist = props.wishlist.wishlist.map((list) => {
+    const handleLogout = e => {
+        e.preventDefault();
+        props.logoutUser();
+    }
+
+    if (props.post.post === null) {
+        return (
+            <div>
+                <div className="row">
+                    <div className="col-md-3">
+                        <Button onClick={handleShow}>Add</Button>
+                    </div>
+                    <div className="col-md-3">
+                        <Button onClick={handleDelete}> Delete All</Button>
+                    </div>
+                    <div className="col-md-3">
+                        <Button onClick={handleLogout}> Logout</Button>
+                    </div>
+                </div>
+                <Modal show={show} onHide={handleClose}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Add a Post</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form>
+                                <div class="row mb-4">
+                                    <div class="col">
+                                        <div class="form-outline">
+                                            <Form.Control type='text' onChange={e => setSubmitField('title', e.target.value)} />
+                                            <Form.Label>Title</Form.Label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <Form.Control type='text' onChange={e => setSubmitField('description', e.target.value)} />
+                                    <Form.Label>Description</Form.Label>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block mb-4" onClick={handleSubmit}>Submit</button>
+                            </Form>
+                        </Modal.Body>
+                    </Modal>
+                You have no posts
+
+            </div>
+        );
+    }
+    const post = props.post.post.map((list) => {
         return (
             <div key={list._id} className="col-12 col-md-6">
-                <RenderWishList wishlist={list}
+                <RenderPost post={list}
                 />
             </div>
         );
     });
 
-    if (props.wishlist.isLoading) {
+    if (props.post.isLoading) {
         return (
             <div className="container">
                 <div className="row">
@@ -67,11 +115,11 @@ const Home = (props) => {
         );
     }
 
-    else if (props.wishlist.errMess) {
+    else if (props.post.errMess) {
         return (
             <div className="container">
                 <div className="row">
-                    <h4>{props.wishlist.errMess}</h4>
+                    <h4>{props.post.errMess}</h4>
                 </div>
             </div>
         );
@@ -86,38 +134,37 @@ const Home = (props) => {
                     <div className="col-md-3">
                         <Button onClick={handleDelete}> Delete All</Button>
                     </div>
+                    <div className="col-md-3">
+                        <Button onClick={handleLogout}> Logout</Button>
+                    </div>
+
                     <Modal show={show} onHide={handleClose}>
                         <Modal.Header closeButton>
-                            <Modal.Title>Add a Wish</Modal.Title>
+                            <Modal.Title>Add a Post</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                        <Form>
-              <div class="row mb-4">
-                <div class="col">
-                  <div class="form-outline">
-                    <Form.Control type='text' onChange={e => setSubmitField('name', e.target.value)} />
-                    <Form.Label>Name</Form.Label>
-                  </div>
-                </div>
-              </div>
+                            <Form>
+                                <div class="row mb-4">
+                                    <div class="col">
+                                        <div class="form-outline">
+                                            <Form.Control type='text' onChange={e => setSubmitField('title', e.target.value)} />
+                                            <Form.Label>Title</Form.Label>
+                                        </div>
+                                    </div>
+                                </div>
 
-              <div class="form-outline mb-4">
-                <Form.Control type='text' onChange={e => setSubmitField('description', e.target.value)} />
-                <Form.Label>Description</Form.Label>
-              </div>
+                                <div class="form-outline mb-4">
+                                    <Form.Control type='text' onChange={e => setSubmitField('description', e.target.value)} />
+                                    <Form.Label>Description</Form.Label>
+                                </div>
 
-              <div class="form-outline mb-4">
-                <Form.Control type='text' onChange={e => setSubmitField('author', e.target.value)} />
-                <Form.Label>Author</Form.Label>
-              </div>
-
-              <button type="submit" class="btn btn-primary btn-block mb-4" onClick={handleSubmit}>Submit</button>
-            </Form>
+                                <button type="submit" class="btn btn-primary btn-block mb-4" onClick={handleSubmit}>Submit</button>
+                            </Form>
                         </Modal.Body>
                     </Modal>
                 </div>
                 <div className="row">
-                    {wishlist}
+                    {post}
 
                 </div>
             </div>
